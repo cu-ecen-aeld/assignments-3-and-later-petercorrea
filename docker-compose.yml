@@ -7,6 +7,7 @@ services:
     build: .
     volumes:
       - .:/usr/src/app
+      - /Users/peter/arm-cross-compiler:/usr/src/app/arm-cross-compiler
       - /var/run/docker.sock:/var/run/docker.sock
     tty: true
     command: /bin/bash
