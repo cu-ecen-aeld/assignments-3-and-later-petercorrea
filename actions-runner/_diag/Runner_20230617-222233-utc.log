@@ -115,3 +115,11 @@
 [2023-06-17 22:22:39Z INFO Terminal] WRITE LINE: Current runner version: '2.305.0'
 [2023-06-17 22:22:39Z INFO Terminal] WRITE LINE: 2023-06-17 22:22:39Z: Listening for Jobs
 [2023-06-17 22:22:40Z INFO JobDispatcher] Set runner/worker IPC timeout to 30 seconds.
+[2023-06-17 22:33:02Z INFO Terminal] WRITE LINE: Exiting...
+[2023-06-17 22:33:02Z INFO ConfigurationStore] IsServiceConfigured()
+[2023-06-17 22:33:02Z INFO ConfigurationStore] IsServiceConfigured: False
+[2023-06-17 22:33:02Z INFO HostContext] Runner will be shutdown for UserCancelled
+[2023-06-17 22:33:02Z WARN GitHubActionsService] GET request to https://pipelines.actions.githubusercontent.com/6n9YdM5l1jhJ5fTwqLVRjaC2kWZ9SuphynErDEtFofg9Ku2iet/_apis/distributedtask/pools/1/messages?sessionId=a5918e2f-86f3-479c-8b6d-29384275e20f&status=Online&runnerVersion=2.305.0 has been cancelled.
+[2023-06-17 22:33:02Z INFO MessageListener] Get next message has been cancelled.
+[2023-06-17 22:33:02Z INFO JobDispatcher] Shutting down JobDispatcher. Make sure all WorkerDispatcher has finished.
+[2023-06-17 22:33:03Z INFO Listener] Runner execution been cancelled.
