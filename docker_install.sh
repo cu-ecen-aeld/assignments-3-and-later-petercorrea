@@ -24,7 +24,14 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Add yourself to group
-sudo usermod -aG docker $USER
+sudo usermod -aG docker docker
+sudo chown docker:docker /home/docker/actions-runner -R
+sudo chown docker:docker /usr/src/app/ -R
+
+sudo chmod 755 /home/docker/actions-runner -R
+
+
+chmod 666 /var/run/docker.sock
 
 echo "Please log out and back in for changes to take effect.  Then, run the following"
 echo "commands to test your installation:"

@@ -10,7 +10,6 @@
  */
 bool do_system(const char *cmd)
 {
-
     /*
      * TODO  add your code here
      *  Call the system() function with the command set in the cmd
@@ -44,12 +43,17 @@ bool do_system(const char *cmd)
 
 bool do_exec(int count, ...)
 {
+    // argument list
     va_list args;
+    // initialize the argument list from the variable arguments
     va_start(args, count);
+    // Declare an array of pointers to characters, inludes null terminating argument
     char *command[count + 1];
     int i;
     for (i = 0; i < count; i++)
     {
+        // va_arg accepts the argument list and the type of the next argument
+        // it returns the next argument in the list, cast to the type specified
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
@@ -67,16 +71,18 @@ bool do_exec(int count, ...)
      *
      */
 
+    // fork a child process
     pid_t pid = fork();
-
     if (pid == -1)
     {
         perror("fork failed");
         return false;
     }
 
+    // if fork() returns 0, we are in the child process
     if (pid == 0)
     {
+        // if execv failed
         if (execv(command[0], command) == -1)
         {
             printf("child failed");
@@ -84,11 +90,14 @@ bool do_exec(int count, ...)
             exit(1);
         }
     }
+    // else we are in the parent process
     else
     {
         int status;
+        // wait for the child process to finish
         waitpid(pid, &status, 0);
 
+        // if the child process terminated
         if (status != 0)
         {
             return false;
@@ -131,7 +140,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
      *
      */
 
-    int kidpid;
+    int child_pid;
     int fd = open(outputfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
     if (fd < 0)
     {
@@ -140,7 +149,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
         return false;
     }
     int status;
-    switch (kidpid = fork())
+    switch (child_pid = fork())
     {
     case -1:
         perror("fork");
@@ -159,7 +168,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
         exit(1);
     default:
 
-        waitpid(kidpid, &status, 0);
+        waitpid(child_pid, &status, 0);
 
         if (WIFEXITED(status))
         {

@@ -3,11 +3,17 @@ version: '3.8'
 services:
   devbox:
     platform: linux/amd64
-    # image: ubuntu:20.04
     build: .
     volumes:
-      - .:/usr/src/app
-      - /Users/peter/arm-cross-compiler:/usr/src/app/arm-cross-compiler
+      # - .:/usr/src/app
       - /var/run/docker.sock:/var/run/docker.sock
+      # - ./actions-runner:/home/docker/actions-runner
     tty: true
     command: /bin/bash
+
+# docker exec -u 0 -it assignment_1-devbox-1 bash
+# RUNNER_ALLOW_RUNASROOT="1" 
+# export GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY=1
+# chmod 666 /var/run/docker.sock
+# - name: Set execute permissions for script
+#   run: chmod +x ./unit-test.sh
