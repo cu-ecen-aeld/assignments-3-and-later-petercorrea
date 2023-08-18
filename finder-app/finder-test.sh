@@ -57,9 +57,11 @@ fi
 
 for i in $( seq 1 $NUMFILES)
 do
+	# /home /tmp/aeld-data
+	echo "$(ls -l)"
 	./writer.sh "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
-
+echo "continue outside"
 OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
 
 # remove temporary directories

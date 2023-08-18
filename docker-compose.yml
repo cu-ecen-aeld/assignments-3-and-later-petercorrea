@@ -5,8 +5,9 @@ services:
     platform: linux/amd64
     build: .
     volumes:
-      # - .:/usr/src/app
+      - .:/usr/src/app
       - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/peter/arm-cross-compiler:/home/arm-cross-compiler
       # - ./actions-runner:/home/docker/actions-runner
     tty: true
     command: /bin/bash
@@ -17,3 +18,9 @@ services:
 # chmod 666 /var/run/docker.sock
 # - name: Set execute permissions for script
 #   run: chmod +x ./unit-test.sh
+# export PATH=$PATH:/home/arm-cross-compiler/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin
+
+# rebuild linux container
+# install docker 
+# aarch64-none-linux-gnu-gcc -print-sysroot
+# bash ./full-test.sh
