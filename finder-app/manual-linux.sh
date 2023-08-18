@@ -98,10 +98,6 @@ make CONFIG_PREFIX=${ROOT_FS} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} instal
 # Copy library dependencies to rootfs
 echo "Copy library dependencies to rootfs"
 cd "$OUTDIR"
-# cp ${FINDER_APP_DIR}/ld-linux-aarch64.so.1 $ROOT_FS/lib
-# cp ${FINDER_APP_DIR}/libm.so.6 $ROOT_FS/lib64
-# cp ${FINDER_APP_DIR}/libresolv.so.2 $ROOT_FS/lib64
-# cp ${FINDER_APP_DIR}/libc.so.6 $ROOT_FS/lib64
 
 sysroot=$(${CROSS_COMPILE}gcc -print-sysroot)
 
@@ -111,6 +107,7 @@ cp $(find $sysroot -path */$lib) ${OUTDIR}/rootfs/${lib}
 libs+=(`${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library" | grep -oP "(?<=\[).+\.so.\d+(?=\])"`)
 for lib in "${libs[@]}"
 do
+    echo $lib
     cp $(find $sysroot -path */$lib) ${OUTDIR}/rootfs/lib64/$(basename ${lib})
 done
 
@@ -134,7 +131,7 @@ make CROSS_COMPILE=${CROSS_COMPILE}
 # Copy scripts and executables to target rootfs
 echo "Copy scripts and executables to target rootfs"
 mkdir -p $ROOT_FS/home/conf $ROOT_FS/conf
-cp writer.sh $ROOT_FS/home
+cp writer $ROOT_FS/home
 cp finder.sh $ROOT_FS/home
 cp finder-test.sh $ROOT_FS/home
 cp autorun-qemu.sh $ROOT_FS/home
