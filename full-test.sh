@@ -20,7 +20,7 @@ echo "Running test with user $(whoami)"
 
 set +e
 
-./unit-test.sh
+sh ./unit-test.sh
 unit_test_rc=$?
 if [ $unit_test_rc -ne 0 ]; then
     echo "Unit test failed"
