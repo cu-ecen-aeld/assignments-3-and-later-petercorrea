@@ -16,4 +16,4 @@ jobs:
       - name: Set execute permissions for script
         run: chmod +x ./full-test.sh
       - name: Run unit test
-        run: ./unit-test.sh
+        run: bash ./unit-test.sh
