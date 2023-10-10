@@ -10,3 +10,6 @@ actions-runner/
 arm-cross-compiler/
 Dockerfile
 docker-compose.yml
+aesdsocket
+server/aesdsocket
+server/valgrind-out.txt

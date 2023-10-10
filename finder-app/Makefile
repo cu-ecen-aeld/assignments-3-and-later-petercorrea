@@ -22,15 +22,20 @@ all: $(TARGET)
 # $@ the target of the rule (in this case, the object file)
 # -c compile the source file, but do not link
 # -o specify the output file name
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+
+# %.o: %.c
+# 	$(CC) $(CFLAGS) -c $< -o $@
 
 # a rule for building $(TARGET) (writer) from $(OBJS)
 # $@ represents the target $(TARGET)
 # $^ represents all of the dependencies $(OBJS)
-$(TARGET): $(OBJS)
 # link the object files into the final executable
-	$(CC) $(LDFLAGS) -o $@ $^
+
+# $(TARGET): $(OBJS)
+# 	$(CC) $(LDFLAGS) -o $@ $^
+
+$(TARGET): writer.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $< -o $@ $(LDFLAGS)
 
 # It removes the object files and the final executable.
 # The -f option makes rm ignore nonexistent files and not prompt the user
