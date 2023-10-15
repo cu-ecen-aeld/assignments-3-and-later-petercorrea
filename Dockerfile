@@ -9,7 +9,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # install the packages and dependencies along with jq so we can parse JSON (add additional packages as necessary)
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends sudo ruby cmake curl nodejs wget unzip vim git jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip tar flex bison bc cpio qemu-system-arm file rsync libncurses5-dev libncursesw5-dev ssh sshpass valgrind netcat
+    apt-get install -y --no-install-recommends sudo ruby cmake curl nodejs wget unzip vim git jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip tar flex bison bc cpio qemu-system-arm file rsync libncurses5-dev libncursesw5-dev ssh sshpass valgrind netcat gawk diffstat texinfo gcc chrpath socat python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool locales
+
+RUN sudo locale-gen en_US.UTF-8
 
 # update the base packages, add a non-sudo user, download runner
 RUN useradd -m -s /bin/bash docker && \

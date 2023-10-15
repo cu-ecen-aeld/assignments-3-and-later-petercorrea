@@ -1,26 +1,23 @@
-CROSS_COMPILE ?=
 #CROSS_COMPILE=aarch64-none-linux-gnu-
-CC=gcc
+CROSS_COMPILE ?=
+CC ?= gcc
+TARGET ?= aesdsocket
+OBJFILES ?= aesdsocket.o
+CFLAGS ?= -g -Wall -Werror
+LDFLAGS ?= -lpthread -lrt
+
+COMPILER = $(if $(CROSS_COMPILE),$(CROSS_COMPILE)$(CC),$(CC))
+EXTRA_FLAGS = $(if $(CROSS_COMPILE),,-g)
 
 default: all
 
-all: aesdsocket
+all: $(TARGET)
 
-aesdsocket: aesdsocket.o
-	@if [ -z "$(CROSS_COMPILE)" ]; \
-	then \
-		$(CC) -o aesdsocket aesdsocket.o; \
-	else \
-		"$(CROSS_COMPILE)$(CC)" -o aesdsocket aesdsocket.o; \
-	fi
+$(TARGET): $(OBJFILES)
+	$(COMPILER) $(EXTRA_FLAGS) -o $(TARGET) $(OBJFILES) $(CFLAGS) $(LDFLAGS)
 
-aesdsocket.o: aesdsocket.c
-	@if [ -z "$(CROSS_COMPILE)" ]; \
-	then \
-		$(CC) -c aesdsocket.c -o aesdsocket.o; \
-	else \
-		"$(CROSS_COMPILE)$(CC)" -c aesdsocket.c -o aesdsocket.o; \
-	fi
+$(OBJFILES): $(TARGET).c
+	$(COMPILER) -c $(TARGET).c $(EXTRA_FLAGS) -o $(OBJFILES) $(CFLAGS)
 
 clean:
-	@rm -f aesdsocket aesdsocket.o
+	@rm -f $(TARGET) $(OBJFILES)
