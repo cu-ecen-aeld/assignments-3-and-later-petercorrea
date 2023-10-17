@@ -13,6 +13,7 @@
 #include <pthread.h>
 #include <sys/queue.h>
 #include <time.h>
+#include "../aesd-char-driver/aesd_ioctl.h"
 
 #define PORT "9000"
 #define BACKLOG 10
@@ -112,7 +113,6 @@ void* read_write_thread(void* thread_param) {
     int buf_size = 1024;
     char *buf = malloc(buf_size * sizeof(char));
     int rc, byte_count, err_val;
-
     struct data* thread_args = (struct data*) thread_param;
 
     syslog(LOG_DEBUG, "Accepted connection to %s\n", thread_args->ip_str);
@@ -134,13 +134,20 @@ void* read_write_thread(void* thread_param) {
             pthread_exit(thread_param);
         }
     }
-    byte_count = recv(thread_args->new_fd, buf, buf_size, 0);
-    while(byte_count == buf_size) { 
-        fwrite(buf, sizeof buf[0], byte_count, file_to_write);
+    do {
         byte_count = recv(thread_args->new_fd, buf, buf_size, 0);
+        if(strncmp(buf, "AESDCHAR_IOCSEEKTO:", strlen("AESDCHAR_IOCSEEKTO:")) == 0) {
+            struct aesd_seekto seekto;
+            char * string_to_parse = strstr(buf, ":");
+            sscanf(string_to_parse, "%d,%d", &seekto.write_cmd, &seekto.write_cmd_offset);
+            
+            ioctl(fileno(file_to_write), AESDCHAR_IOCSEEKTO, &seekto);
+        }
+        else {
+            fwrite(buf, sizeof buf[0], byte_count, file_to_write);
+        }
     }
-    fwrite(buf, sizeof buf[0], byte_count, file_to_write);
-
+    while(byte_count == buf_size);
     rewind(file_to_write);
     byte_count = fread(buf, sizeof buf[0], buf_size, file_to_write);
     send(thread_args->new_fd, buf, byte_count, MSG_MORE);
