@@ -16,11 +16,11 @@
 #include <linux/printk.h>
 #include <linux/types.h>
 #include <linux/cdev.h>
-#include <linux/fs.h> // file_operations
+#include <linux/fs.h>
 #include <linux/slab.h>
 #include "aesdchar.h"
 #include "aesd_ioctl.h"
-int aesd_major =   0; // use dynamic major
+int aesd_major =   0; 
 int aesd_minor =   0;
 
 MODULE_AUTHOR("Peter Correa");
@@ -102,6 +102,7 @@ ssize_t aesd_write(struct file *filp, const char __user *buf, size_t count,
     count_remaining = copy_from_user((void*)&dev->entry.buffptr[size], buf, count);
     retval = count - count_remaining;
     dev->entry.size = size + retval;
+
     *f_pos = *f_pos + retval;
 
     if (strchr((char*)dev->entry.buffptr, '\n')) {
@@ -129,7 +130,6 @@ loff_t aesd_llseek(struct file *filp, loff_t offset, int whence) {
 long aesd_adjust_file_offset(struct file *filp, unsigned int cmd, unsigned int offset) {
     struct aesd_dev *dev = filp->private_data;
     int proposed_cmd = (dev->buffer.out_offs + cmd) % AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED;
-    int retval = 0;
     int new_fpos = 0;
     PDEBUG("cmd: %d offset: %d", cmd, offset);
     PDEBUG("current buffer: %d proposed buffer: %d", dev->buffer.out_offs, proposed_cmd);
@@ -150,8 +150,7 @@ long aesd_adjust_file_offset(struct file *filp, unsigned int cmd, unsigned int o
         }
         new_fpos += offset;
     }
-    filp->f_pos = new_fpos;
-    return retval;
+    return new_fpos;
 }
 long aesd_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
     long retval = 0;
@@ -164,6 +163,7 @@ long aesd_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
             }
             else {
                 retval = aesd_adjust_file_offset(filp,seekto.write_cmd, seekto.write_cmd_offset);
+                filp->f_pos = retval;
             }
             break;
         default:
@@ -172,14 +172,13 @@ long aesd_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
 
     return retval;
 }
-
 struct file_operations aesd_fops = {
     .owner =    THIS_MODULE,
     .read =     aesd_read,
     .write =    aesd_write,
     .open =     aesd_open,
     .release =  aesd_release,
-     .llseek  = aesd_llseek,
+    .llseek  = aesd_llseek,
     .unlocked_ioctl = aesd_ioctl,
 };
 
@@ -196,8 +195,6 @@ static int aesd_setup_cdev(struct aesd_dev *dev)
     }
     return err;
 }
-
-
 
 int aesd_init_module(void)
 {
@@ -235,15 +232,13 @@ void aesd_cleanup_module(void)
     /**
      * TODO: cleanup AESD specific poritions here as necessary
      */
-     AESD_CIRCULAR_BUFFER_FOREACH(entry, &aesd_device.buffer, index) {
+    AESD_CIRCULAR_BUFFER_FOREACH(entry, &aesd_device.buffer, index) {
         kfree(entry->buffptr);
     }
     kfree(aesd_device.entry.buffptr);
     mutex_destroy(&aesd_device.read_write_mutex);
     unregister_chrdev_region(devno, 1);
 }
-
-
 
 module_init(aesd_init_module);
 module_exit(aesd_cleanup_module);

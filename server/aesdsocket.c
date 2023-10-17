@@ -19,7 +19,7 @@
 #define BACKLOG 10
 #define USE_AESD_CHAR_DEVICE 1
 
-#if USE_AESD_CHAR_DEVICE
+#if (USE_AESD_CHAR_DEVICE == 1)
      /* This one if debugging is on, and kernel space */
 #    define FILE_NAME "/dev/aesdchar"
 #else
@@ -134,21 +134,26 @@ void* read_write_thread(void* thread_param) {
             pthread_exit(thread_param);
         }
     }
+    bool ioctl_cmd_sent = false;
     do {
         byte_count = recv(thread_args->new_fd, buf, buf_size, 0);
         if(strncmp(buf, "AESDCHAR_IOCSEEKTO:", strlen("AESDCHAR_IOCSEEKTO:")) == 0) {
             struct aesd_seekto seekto;
             char * string_to_parse = strstr(buf, ":");
-            sscanf(string_to_parse, "%d,%d", &seekto.write_cmd, &seekto.write_cmd_offset);
-            
+            sscanf(string_to_parse, ":%d,%d", &seekto.write_cmd, &seekto.write_cmd_offset);
+            syslog(LOG_DEBUG, "write_cmd: %d write_cmd_offset: %d", seekto.write_cmd, seekto.write_cmd_offset);
             ioctl(fileno(file_to_write), AESDCHAR_IOCSEEKTO, &seekto);
+            ioctl_cmd_sent = true;
         }
         else {
             fwrite(buf, sizeof buf[0], byte_count, file_to_write);
         }
     }
     while(byte_count == buf_size);
-    rewind(file_to_write);
+    if (!ioctl_cmd_sent) {
+        rewind(file_to_write);
+    }
+
     byte_count = fread(buf, sizeof buf[0], buf_size, file_to_write);
     send(thread_args->new_fd, buf, byte_count, MSG_MORE);
     while (byte_count == buf_size) {
