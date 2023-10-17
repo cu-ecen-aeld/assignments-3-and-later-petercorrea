@@ -154,10 +154,10 @@ long aesd_adjust_file_offset(struct file *filp, unsigned int cmd, unsigned int o
 }
 long aesd_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
     long retval = 0;
+    struct aesd_seekto seekto;
 
     switch(cmd) {
         case AESDCHAR_IOCSEEKTO:
-            struct aesd_seekto seekto;
             if (copy_from_user(&seekto, (const void __user *)arg, sizeof(seekto)) != 0) {
                 retval = EFAULT;
             }
